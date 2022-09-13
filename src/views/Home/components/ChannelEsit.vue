@@ -15,10 +15,12 @@
     <div class="my-pannel">
       <van-grid gutter="10" :border="false">
         <van-grid-item
-          v-for="item in myChannels"
+          v-for="(item,index) in myChannels"
+          :class="{ active: item.name === '推荐' }"
           :key="item.id"
           :text="item.name"
-          :icon="isEdit ? 'cross' : ''"
+          :icon="isEdit && item.name !== '推荐' ? 'cross' : ''"
+          @click="handleMyChannel(item, index)"
         />
       </van-grid>
       <!-- 推荐频道 -->
@@ -28,9 +30,9 @@
     <div class="recommend-pannel">
       <van-grid gutter="10" :border="false">
         <van-grid-item
-          v-for="value in 14"
-          :key="value"
-          text="文字"
+          v-for="item in recommmendChannels"
+          :key="item.id"
+          :text="item.name"
           icon="plus"
         />
       </van-grid>
@@ -40,6 +42,8 @@
 </template>
 
 <script>
+import { getAllChannelsAPI } from '@/api'
+
 export default {
   name: 'ChannelEdit',
   props: {
@@ -47,13 +51,48 @@ export default {
   },
   data() {
     return {
-      isEdit: false
+      isEdit: false,
+      allChannels: []
+    }
+  },
+  computed: {
+    recommmendChannels() {
+      // 推荐频道：所有频道-我的频道
+      // filter返回值：数组
+      return this.allChannels.filter((allChannelItem) => {
+        // 所有频道-我的频道
+        // 我的频道数组里面，看一下，有没有allChannelItem,有retuen false
+        return !this.myChannels.find(
+          (myChannelItem) => myChannelItem.id === allChannelItem.id
+        )
+      })
+    }
+  },
+  created() {
+    this.getAllChannels()
+  },
+  methods: {
+    async getAllChannels() {
+      const { data } = await getAllChannelsAPI()
+      this.allChannels = data.data.channels
+    },
+    handleMyChannel({ name }, index) {
+      if (this.isEdit && name !== '推荐') {
+        console.log('删除频道', name)
+      } else {
+        this.$emit('change-active', index)
+      }
     }
   }
 }
 </script>
 // postcss插件无法把行内px-->rem
 <style scoped lang="less">
+:deep(.active) {
+  .van-grid-item__text {
+    color: red;
+  }
+}
 .channel-edit {
   padding-top: 92px;
   :deep(.btn) {

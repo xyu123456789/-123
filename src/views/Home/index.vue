@@ -15,7 +15,7 @@
     </van-tabs>
     <!-- 弹出层 -->
     <van-popup closeable close-icon-position="top-left" v-model="isShow" position="bottom" :style="{ height: '100%' }" >
-      <channel-esit :myChannels="channels"></channel-esit>
+      <channel-esit @change-active="[(isShow=false),(active=$event)]" :myChannels="channels"></channel-esit>
     </van-popup>
   </div>
 </template>
