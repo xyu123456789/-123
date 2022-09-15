@@ -1,6 +1,11 @@
 <template>
   <div>
-    <van-cell v-for="(item, index) in  highLightSuggestions" :key="index" icon="search">
+    <van-cell
+      v-for="(item, index) in highLightSuggestions"
+      :key="index"
+      icon="search"
+      @click="$emit('change-keywords',suggestions[index])"
+    >
       <template #title>
         <span v-html="item"></span>
       </template>
@@ -43,7 +48,10 @@ export default {
     highLightSuggestions() {
       const reg = new RegExp(this.keywords, 'ig')
       return this.suggestions.map((Str) => {
-        return Str.replace(reg, (match) => `<span style="color:red">${match}</span>`)
+        return Str.replace(
+          reg,
+          (match) => `<span style="color:red">${match}</span>`
+        )
       })
     }
   },
